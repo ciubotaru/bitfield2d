@@ -40,45 +40,41 @@
 	9, 8, 7, 6, 5, 4, 3, 2, 1, 0 
  
 typedef struct bitfield bitfield;
-
  
 bitfield * bfnew(const unsigned int x, const unsigned int y);
-
  
 void _bfdel(unsigned int count, ...);
-
  
 #define bfdel(...) _bfdel(BITFIELD2D_NARG(__VA_ARGS__), __VA_ARGS__)
 
 unsigned int bfgetbit(const struct bitfield *instance, const unsigned int x,
 		       const unsigned int y);
 
- 
 void bfsetbit(struct bitfield *instance, const unsigned int x,
 		 const unsigned int y);
 
- 
 void bfclearbit(struct bitfield *instance, const unsigned int x,
 		   const unsigned int y);
 
- 
 void bftogglebit(struct bitfield *instance, const unsigned int x,
 		    const unsigned int y);
 
+bitfield *bfand(bitfield * const input1, bitfield * const input2);
+
+bitfield *bfor(bitfield * const input1, bitfield * const input2);
+
+bitfield *bfxor(bitfield * const input1, bitfield * const input2);
+
+bitfield *bfnot(bitfield * const input);
  
 void bfresize(bitfield * instance, const unsigned int new_x,
 		 const unsigned int new_y);
 
- 
 bitfield * bfsub(bitfield * input, const unsigned int x_start,
-		    
- const unsigned int y_start, const unsigned int x_len,
-		    
- const unsigned int y_len);
-
+		    const unsigned int y_start, const unsigned int x_len,
+		    const unsigned int y_len);
  
 unsigned int bfpopcount(const struct bitfield *instance);
-
  
 #endif	/* BITFIELD2D_H */
     
