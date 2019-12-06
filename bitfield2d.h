@@ -41,7 +41,7 @@
  
 typedef struct bitfield bitfield;
  
-bitfield * bfnew(const unsigned int x, const unsigned int y);
+bitfield *bfnew(const unsigned int rows, const unsigned int columns);
  
 void _bfdel(unsigned int count, ...);
  

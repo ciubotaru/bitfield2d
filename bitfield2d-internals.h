@@ -4,7 +4,7 @@
 #ifndef LONG_BIT
 #define LONG_BIT (unsigned int) (sizeof(unsigned long) * CHAR_BIT)
 #endif
-#define BITINDEX(bf, a, b) (a * (bf)->y + b)
+#define BITINDEX(bf, a, b) (a * (bf)->columns + b)
 #define BITNSLOTS(x, y) (((x * y) + LONG_BIT - 1) / LONG_BIT)
 #define BITSLOT(bf, a, b) (BITSLOT_FLAT(BITINDEX(bf, a, b)))
 #define BITSLOT_FLAT(a) (a / LONG_BIT)
@@ -25,7 +25,7 @@
 #define MIN(X, Y) (((X) > (Y)) ? (Y) : (X))
 
 struct bitfield {
-	unsigned int x;
-	unsigned int y;
+	unsigned int rows;
+	unsigned int columns;
 	unsigned long *field;
 };
