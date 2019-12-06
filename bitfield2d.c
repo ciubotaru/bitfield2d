@@ -5,8 +5,8 @@
 #include "bitfield2d.h"
 #include "bitfield2d-internals.h"
 
-static inline void bfcleartail(struct bitfield *instance) {
-	int tail = (instance->x * instance->y) % LONG_BIT;
+static inline void bfcleartail(bitfield *instance) {
+	int tail = (instance->x *instance->y) % LONG_BIT;
 	if (tail != 0) {
 		/* create a mask for the tail */
 		unsigned long mask = (1UL << tail) - 1UL;
@@ -24,7 +24,7 @@ bitfield *bfnew(const unsigned int x, const unsigned int y) {
 	return output;
 }
 
-void __bfdel(bitfield ** instance) {
+void __bfdel(bitfield **instance) {
 	if (*instance == NULL)
 		return;
 	free((*instance)->field);
@@ -44,25 +44,25 @@ void _bfdel(unsigned int count, ...) {
 	va_end(args);
 }
 
-void bfsetbit(bitfield * instance, const unsigned int x, const unsigned int y) {
+void bfsetbit(bitfield *instance, const unsigned int x, const unsigned int y) {
 	BITSET(instance, x, y);
 }
 
-unsigned int bfgetbit(const bitfield * instance, const unsigned int x,
+unsigned int bfgetbit(const bitfield *instance, const unsigned int x,
 		      const unsigned int y) {
 	return BITGET(instance, x, y);
 }
 
-void bfclearbit(bitfield * instance, const unsigned int x, const unsigned int y) {
+void bfclearbit(bitfield *instance, const unsigned int x, const unsigned int y) {
 	BITCLEAR(instance, x, y);
 }
 
-void bftogglebit(bitfield * instance, const unsigned int x,
+void bftogglebit(bitfield *instance, const unsigned int x,
 		 const unsigned int y) {
 	BITTOGGLE(instance, x, y);
 }
 
-bitfield *bfand(bitfield * const input1, bitfield * const input2) {
+bitfield *bfand(const bitfield *input1, const bitfield *input2) {
 	if (input1->x != input2->x || input1->y != input2->y)
 		return NULL;
 	int i;
@@ -73,7 +73,7 @@ bitfield *bfand(bitfield * const input1, bitfield * const input2) {
 	return output;
 }
 
-bitfield *bfor(bitfield * const input1, bitfield * const input2) {
+bitfield *bfor(const bitfield *input1, const bitfield *input2) {
 	if (input1->x != input2->x || input1->y != input2->y)
 		return NULL;
 	int i;
@@ -84,7 +84,7 @@ bitfield *bfor(bitfield * const input1, bitfield * const input2) {
 	return output;
 }
 
-bitfield *bfxor(bitfield * const input1, bitfield * const input2) {
+bitfield *bfxor(const bitfield *input1, const bitfield *input2) {
 	if (input1->x != input2->x || input1->y != input2->y)
 		return NULL;
 	int i;
@@ -95,7 +95,7 @@ bitfield *bfxor(bitfield * const input1, bitfield * const input2) {
 	return output;
 }
 
-bitfield *bfnot(bitfield * const input) {
+bitfield *bfnot(const bitfield *input) {
 	bitfield *output = bfnew(input->x, input->y);
 	int i;
 	for (i = 0; i < BITNSLOTS(input->x, input->y); i++) {
@@ -105,7 +105,7 @@ bitfield *bfnot(bitfield * const input) {
 	return output;
 }
 
-void bfresize(bitfield * instance, const unsigned int new_x,
+void bfresize(bitfield *instance, const unsigned int new_x,
 	      const unsigned int new_y) {
 	unsigned long *tmp =
 	    calloc(1, BITNSLOTS(new_x, new_y) * sizeof(unsigned long));
@@ -143,7 +143,7 @@ void bfresize(bitfield * instance, const unsigned int new_x,
 	instance->y = new_y;
 }
 
-bitfield *bfsub(bitfield * input, const unsigned int x_start,
+bitfield *bfsub(const bitfield *input, const unsigned int x_start,
 		const unsigned int y_start, const unsigned int x_len,
 		const unsigned int y_len) {
 	if (input->x < x_start + x_len || input->y < y_start + y_len)
@@ -187,7 +187,7 @@ bitfield *bfsub(bitfield * input, const unsigned int x_start,
 	return output;
 }
 
-unsigned int bfpopcount(const struct bitfield *instance) {
+unsigned int bfpopcount(const bitfield *instance) {
 	unsigned int bits = 0;
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(instance->x, instance->y); i++)
@@ -196,7 +196,7 @@ unsigned int bfpopcount(const struct bitfield *instance) {
 	return bits;
 }
 
-void bfprint(bitfield * instance) {
+void bfprint(bitfield *instance) {
 	int i, j;
 	for (i = 0; i < instance->x; i++) {
 		for (j = 0; j < instance->y; j++) {
@@ -207,7 +207,7 @@ void bfprint(bitfield * instance) {
 }
 
 /*
-void bfrand(bitfield * instance) {
+void bfrand(bitfield *instance) {
 	int i, j;
 	for (i = 0; i < instance->x; i++) {
 		for (j = 0; j < instance->y; j++) {
@@ -217,7 +217,7 @@ void bfrand(bitfield * instance) {
 	}
 }
 */
-void bfsetall(bitfield * instance) {
+void bfsetall(bitfield *instance) {
 	int i;
 	for (i = 0; i < BITNSLOTS(instance->x, instance->y); i++) {
 		instance->field[i] = ~0UL;
