@@ -2,12 +2,12 @@
 
 #ifndef BITFIELD2D_H
 #define BITFIELD2D_H
-    
+
 #define BITFIELD2D_NARG(...) \
-	BITFIELD2D_NARG_(__VA_ARGS__, BITFIELD2D_RSEQ_N()) 
+	BITFIELD2D_NARG_(__VA_ARGS__, BITFIELD2D_RSEQ_N())
 
 #define BITFIELD2D_NARG_(...) \
-	BITFIELD2D_ARG_N(__VA_ARGS__) 
+	BITFIELD2D_ARG_N(__VA_ARGS__)
 
 #define BITFIELD2D_ARG_N( \
 	_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
@@ -22,8 +22,8 @@
 	_91, _92, _93, _94, _95, _96, _97, _98, _99, _100, \
 	_101, _102, _103, _104, _105, _106, _107, _108, _109, _110, \
 	_111, _112, _113, _114, _115, _116, _117, _118, _119, _120, \
-	_121, _122, _123, _124, _125, _126, _127, N, ...) N 
-	
+	_121, _122, _123, _124, _125, _126, _127, N, ...) N
+
 #define BITFIELD2D_RSEQ_N() \
 	127, 126, 125, 124, 123, 122, 121, 120, \
 	119, 118, 117, 116, 115, 114, 113, 112, 111, 110, \
@@ -37,14 +37,14 @@
 	39, 38, 37, 36, 35, 34, 33, 32, 31, 30, \
 	29, 28, 27, 26, 25, 24, 23, 22, 21, 20, \
 	19, 18, 17, 16, 15, 14, 13, 12, 11, 10, \
-	9, 8, 7, 6, 5, 4, 3, 2, 1, 0 
- 
+	9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+
 typedef struct bitfield bitfield;
- 
+
 bitfield *bfnew(const unsigned int rows, const unsigned int columns);
- 
+
 void _bfdel(unsigned int count, ...);
- 
+
 #define bfdel(...) _bfdel(BITFIELD2D_NARG(__VA_ARGS__), __VA_ARGS__)
 
 unsigned int bfgetbit(const bitfield *instance, const unsigned int x,
@@ -66,15 +66,18 @@ bitfield *bfor(const bitfield *input1, const bitfield *input2);
 bitfield *bfxor(const bitfield *input1, const bitfield *input2);
 
 bitfield *bfnot(const bitfield *input);
- 
+
+void bfsetall(bitfield *instance);
+
+void bfclearall(bitfield *instance);
+
 void bfresize(bitfield *instance, const unsigned int new_x,
 		 const unsigned int new_y);
 
 bitfield * bfsub(const bitfield *input, const unsigned int x_start,
 		    const unsigned int y_start, const unsigned int x_len,
 		    const unsigned int y_len);
- 
+
 unsigned int bfpopcount(const bitfield *instance);
- 
+
 #endif	/* BITFIELD2D_H */
-    

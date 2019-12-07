@@ -105,6 +105,21 @@ bitfield *bfnot(const bitfield *input) {
 	return output;
 }
 
+void bfsetall(bitfield *instance) {
+	if (!instance) return;
+	unsigned int i;
+	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
+		instance->field[i] = ~0UL;
+	bfcleartail(instance);
+}
+
+void bfclearall(bitfield *instance) {
+	if (!instance) return;
+	unsigned int i;
+	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
+		instance->field[i] = 0UL;
+}
+
 void bfresize(bitfield *instance, const unsigned int new_rows,
 	      const unsigned int new_columns) {
 	unsigned long *tmp =
@@ -217,10 +232,3 @@ void bfrand(bitfield *instance) {
 	}
 }
 */
-void bfsetall(bitfield *instance) {
-	int i;
-	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++) {
-		instance->field[i] = ~0UL;
-	}
-	bfcleartail(instance);
-}
