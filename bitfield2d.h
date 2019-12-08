@@ -71,6 +71,8 @@ void bfsetall(bitfield *instance);
 
 void bfclearall(bitfield *instance);
 
+bitfield *bfclone(const bitfield *input);
+
 void bfresize(bitfield *instance, const unsigned int new_x,
 		 const unsigned int new_y);
 

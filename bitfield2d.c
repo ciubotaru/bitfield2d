@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <stdarg.h>
 #include "bitfield2d.h"
@@ -118,6 +119,23 @@ void bfclearall(bitfield *instance) {
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
 		instance->field[i] = 0UL;
+}
+
+bitfield *bfclone(const bitfield *input) {
+	if (!input) return NULL;
+	unsigned int bitnslots = BITNSLOTS(input->rows, input->columns);
+	bitfield *output = (bitfield *) malloc(sizeof(bitfield));
+	if (!output)
+		return NULL;
+	output->rows = input->rows;
+	output->columns = input->columns;
+	output->field = malloc(bitnslots * sizeof(unsigned long));
+	if (!output->field) {
+		bfdel(output);
+		return NULL;
+	}
+	memcpy(output->field, input->field, bitnslots * sizeof(unsigned long));
+	return output;
 }
 
 void bfresize(bitfield *instance, const unsigned int new_rows,
