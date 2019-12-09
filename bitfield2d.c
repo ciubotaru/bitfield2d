@@ -229,6 +229,30 @@ unsigned int bfpopcount(const bitfield *instance) {
 	return bits;
 }
 
+bitfield *bfmul(const bitfield *input1, const bitfield *input2) {
+	if (!input1 || !input2) return NULL;
+	if (input1->columns != input2->rows) return NULL;
+	bitfield *output = bfnew(input1->rows, input2->columns);
+	unsigned int *matrix = calloc(1, output->rows * output->columns * sizeof(unsigned int));
+	bitfield *row, *column;
+	unsigned int x, y, z;
+	unsigned long count;
+	for (x = 0; x < output->rows; x++) {
+		for (y = 0; y < output->columns; y++) {
+			count = 0;
+			row = bfsub(input1, x, 0, 1, input1->columns);
+			column = bfsub(input2, 0, y, input2->rows, 1);
+			for (z = 0; z < BITNSLOTS(1, input1->columns); z++) {
+				count += __builtin_popcount(row->field[z] & column->field[z]);
+			}
+			if (count & 1UL) BITSET(output, x, y);
+			bfdel(&row, &column);
+		}
+	}
+	free(matrix);
+	return output;
+}
+
 void bfprint(bitfield *instance) {
 	int i, j;
 	for (i = 0; i < instance->rows; i++) {

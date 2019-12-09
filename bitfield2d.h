@@ -82,4 +82,6 @@ bitfield * bfsub(const bitfield *input, const unsigned int x_start,
 
 unsigned int bfpopcount(const bitfield *instance);
 
+bitfield *bfmul(const bitfield *input1, const bitfield *input2);
+
 #endif	/* BITFIELD2D_H */
