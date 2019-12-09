@@ -88,4 +88,6 @@ unsigned int bfpopcount_c(const bitfield *instance, const unsigned int col_nr);
 
 bitfield *bfmul(const bitfield *input1, const bitfield *input2);
 
+bitfield *bftranspose(const bitfield *input);
+
 #endif	/* BITFIELD2D_H */

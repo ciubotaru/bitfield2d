@@ -275,6 +275,18 @@ bitfield *bfmul(const bitfield *input1, const bitfield *input2) {
 	return output;
 }
 
+bitfield *bftranspose(const bitfield *input) {
+	if (!input) return NULL;
+	bitfield *output = bfnew(input->columns, input->rows);
+	unsigned x, y;
+	for (x = 0; x < input->rows; x++) {
+		for (y = 0; y < input->columns; y++) {
+			if (bfgetbit(input, x, y)) bfsetbit(output, y, x);
+		}
+	}
+	return output;
+}
+
 void bfprint(bitfield *instance) {
 	int i, j;
 	for (i = 0; i < instance->rows; i++) {
