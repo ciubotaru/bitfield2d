@@ -229,6 +229,28 @@ unsigned int bfpopcount(const bitfield *instance) {
 	return bits;
 }
 
+unsigned int bfpopcount_r(const bitfield *instance, const unsigned int row_nr) {
+	if (!instance) return 0;
+	if (row_nr >= instance->rows) return 0;
+	bitfield *row = bfsub(instance, row_nr, 0, 1, instance->columns);
+	unsigned int bits = 0;
+	unsigned int i;
+	for (i = 0; i < BITNSLOTS(row->rows, row->columns); i++)
+		/* this is GCC and Clang only */
+		bits += __builtin_popcountl(row->field[i]);
+	return bits;
+}
+
+unsigned int bfpopcount_c(const bitfield *instance, const unsigned int col_nr) {
+	if (!instance) return 0;
+	if (col_nr >= instance->columns) return 0;
+	unsigned int bits = 0;
+	unsigned int i;
+	for (i = 0; i < instance->rows; i++)
+		bits += BITGET(instance, i, col_nr);
+	return bits;
+}
+
 bitfield *bfmul(const bitfield *input1, const bitfield *input2) {
 	if (!input1 || !input2) return NULL;
 	if (input1->columns != input2->rows) return NULL;
