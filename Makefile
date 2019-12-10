@@ -4,6 +4,7 @@ LIBS = -I.
 VERSION = 0.0.1
 export VERSION
 TESTDIR=tests
+EXAMPLEDIR=examples
 LD_LIBRARY_PATH := $(shell pwd):$(LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
@@ -27,6 +28,12 @@ test: check
 check:
 	$(MAKE) -C $(TESTDIR)
 
+examples: example
+
+example:
+	$(MAKE) -C $(EXAMPLEDIR)
+
 clean:
 	rm -rvf *.a *.o *.so*
 	$(MAKE) -C $(TESTDIR) clean
+	$(MAKE) -C $(EXAMPLEDIR) clean
