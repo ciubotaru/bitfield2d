@@ -9,13 +9,18 @@ export LD_LIBRARY_PATH
 
 .PHONY: test clean distclean
 
-all: shared
+all: shared static
 
 shared: libbitfield2d.so.$(VERSION)
 libbitfield2d.so.$(VERSION): bitfield2d.c bitfield2d.h bitfield2d-internals.h
 	$(CC) $(CFLAGS) -c -fpic bitfield2d.c -o bf-shared.o -I. $(LIBS)
 	$(CC) $(CFLAGS) -shared -Wl,-soname,libbitfield2d.so.1 -o libbitfield2d.so.$(VERSION) bf-shared.o $(LIBS)
 	for i in libbitfield2d.so.1 libbitfield2d.so; do ln -svf libbitfield2d.so.$(VERSION) $$i; done
+
+static: libbitfield2d.a
+libbitfield2d.a: bitfield2d.c
+	$(CC) $(CFLAGS) -c bitfield2d.c -o bf-static.o $(LIBS)
+	$(AR) rcs libbitfield2d.a bf-static.o
 
 test: check
 
