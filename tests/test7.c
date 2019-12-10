@@ -2,45 +2,45 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "bitfield2d.h"
-#include "bitfield2d-internals.h"
+#include "bitmatrix.h"
+#include "bitmatrix-internals.h"
 
-/* Testing bfsetall() and bfclearall() */
+/* Testing bm_setall() and bm_clearall() */
 
 int main()
 {
 	srand((unsigned)time(NULL));
 	int i, cmp;		//counter
 	int len = 80;
-	char *msg = "Testing bfsetall() and bfclearall()";
+	char *msg = "Testing bm_setall() and bm_clearall()";
 	char *status[] = { "[PASS]", "[FAIL]" };
 	int dots = len - strlen(msg) - 6;	/* 6 is the length of pass/fail string */
 	printf("%s", msg);
 	for (i = 0; i < dots; i++)
 		printf(".");
 	int retval = 0;
-	struct bitfield *input = bfnew(10, 10);
+	struct bitmatrix *input = bm_new(10, 10);
 	int x, y;
-	bfsetall(input);
+	bm_setall(input);
 	for (x = 0; x < 10; x++) {
 		for (y = 0; y < 10; y++) {
-			if (bfgetbit(input, x, y) != 1) {
+			if (bm_getbit(input, x, y) != 1) {
 				retval = 1;
 				goto ret;
 			}
 		}
 	}
-	bfclearall(input);
+	bm_clearall(input);
 	for (x = 0; x < 10; x++) {
 		for (y = 0; y < 10; y++) {
-			if (bfgetbit(input, x, y) != 0) {
+			if (bm_getbit(input, x, y) != 0) {
 				retval = 1;
 				goto ret;
 			}
 		}
 	}
 ret:
-	bfdel(&input);
+	bm_del(&input);
 	printf("%s\n", status[retval]);
 	return retval;
 }

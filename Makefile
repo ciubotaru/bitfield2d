@@ -12,16 +12,16 @@ export LD_LIBRARY_PATH
 
 all: shared static
 
-shared: libbitfield2d.so.$(VERSION)
-libbitfield2d.so.$(VERSION): bitfield2d.c bitfield2d.h bitfield2d-internals.h
-	$(CC) $(CFLAGS) -c -fpic bitfield2d.c -o bf-shared.o -I. $(LIBS)
-	$(CC) $(CFLAGS) -shared -Wl,-soname,libbitfield2d.so.1 -o libbitfield2d.so.$(VERSION) bf-shared.o $(LIBS)
-	for i in libbitfield2d.so.1 libbitfield2d.so; do ln -svf libbitfield2d.so.$(VERSION) $$i; done
+shared: libbitmatrix.so.$(VERSION)
+libbitmatrix.so.$(VERSION): bitmatrix.c bitmatrix.h bitmatrix-internals.h
+	$(CC) $(CFLAGS) -c -fpic bitmatrix.c -o bm-shared.o -I. $(LIBS)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,libbitmatrix.so.1 -o libbitmatrix.so.$(VERSION) bm-shared.o $(LIBS)
+	for i in libbitmatrix.so.1 libbitmatrix.so; do ln -svf libbitmatrix.so.$(VERSION) $$i; done
 
-static: libbitfield2d.a
-libbitfield2d.a: bitfield2d.c
-	$(CC) $(CFLAGS) -c bitfield2d.c -o bf-static.o $(LIBS)
-	$(AR) rcs libbitfield2d.a bf-static.o
+static: libbitmatrix.a
+libbitmatrix.a: bitmatrix.c
+	$(CC) $(CFLAGS) -c bitmatrix.c -o bm-static.o $(LIBS)
+	$(AR) rcs libbitmatrix.a bm-static.o
 
 test: check
 

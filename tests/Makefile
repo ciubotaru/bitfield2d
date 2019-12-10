@@ -8,7 +8,7 @@ all: build-tests run-tests
 
 build-tests: $(TESTFILES)
 $(TESTFILES): %: %.c
-	$(CC) $(CFLAGS) -Wl,-rpath=$(CURDIR) -o $@ $< $(LIBS) -lbitfield2d
+	$(CC) $(CFLAGS) -Wl,-rpath=$(CURDIR) -o $@ $< $(LIBS) -lbitmatrix
 
 run-tests: $(TESTFILES)
 	for i in $(TESTFILES); do \

@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "bitfield2d.h"
+#include "bitmatrix.h"
 
-/* Testing bfpopcount() */
+/* Testing bm_popcount() */
 
 int main() {
 	srand((unsigned)time(NULL));
 	unsigned int i;
 	unsigned int len = 80;
-	char *msg = "Testing bfpopcount()";
+	char *msg = "Testing bm_popcount()";
 	char *status[] = { "[PASS]", "[FAIL]" };
 	unsigned int dots = len - strlen(msg) - 6;	/* 6 is the length of pass/fail string */
 	printf("%s", msg);
@@ -18,22 +18,22 @@ int main() {
 		printf(".");
 	int retval = 0;
 	int count = 0;
-	bitfield *instance = bfnew(10, 10);
+	bitmatrix *instance = bm_new(10, 10);
 	unsigned int x, y;
 	for (x = 0; x < 10; x++) {
 		for (y = 0; y < 10; y++) {
 			if (rand() % 2) {
-				bfsetbit(instance, x, y);
+				bm_setbit(instance, x, y);
 				count++;
 			}
 		}
 	}
-	if (bfpopcount(instance) != count) {
+	if (bm_popcount(instance) != count) {
 		retval = 1;
 		goto ret;
 	}
  ret:
-	bfdel(&instance);
+	bm_del(&instance);
 	printf("%s\n", status[retval]);
 	return retval;
 }

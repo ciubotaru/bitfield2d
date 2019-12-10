@@ -5,7 +5,7 @@ LIBS = -I..
 all: build-examples
 build-examples: $(EXAMPLES)
 $(EXAMPLES): %: %.c
-	$(CC) $(CFLAGS) -o $@ $< ../libbitfield2d.a $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $< ../libbitmatrix.a $(LIBS)
 
 clean:
 	rm -rvf $(EXAMPLES)

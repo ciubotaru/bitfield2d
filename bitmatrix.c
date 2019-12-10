@@ -3,10 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
-#include "bitfield2d.h"
-#include "bitfield2d-internals.h"
+#include "bitmatrix.h"
+#include "bitmatrix-internals.h"
 
-static inline void bfcleartail(bitfield *instance) {
+static inline void bm_cleartail(bitmatrix *instance) {
 	int tail = (instance->rows *instance->columns) % LONG_BIT;
 	if (tail != 0) {
 		/* create a mask for the tail */
@@ -17,15 +17,15 @@ static inline void bfcleartail(bitfield *instance) {
 	}
 }
 
-bitfield *bfnew(const unsigned int rows, const unsigned int columns) {
-	bitfield *output = (bitfield *) malloc(sizeof(bitfield));
+bitmatrix *bm_new(const unsigned int rows, const unsigned int columns) {
+	bitmatrix *output = (bitmatrix *) malloc(sizeof(bitmatrix));
 	output->rows = rows;
 	output->columns = columns;
 	output->field = calloc(1, BITNSLOTS(rows, columns) * sizeof(unsigned long));
 	return output;
 }
 
-void __bfdel(bitfield **instance) {
+void __bm_del(bitmatrix **instance) {
 	if (*instance == NULL)
 		return;
 	free((*instance)->field);
@@ -33,112 +33,112 @@ void __bfdel(bitfield **instance) {
 	*instance = NULL;
 }
 
-void _bfdel(unsigned int count, ...) {
+void _bm_del(unsigned int count, ...) {
 	unsigned int i;
-	bitfield **instance = NULL;
+	bitmatrix **instance = NULL;
 	va_list args;
 	va_start(args, count);
 	for (i = 0; i < count; i++) {
-		instance = va_arg(args, bitfield **);
-		__bfdel(instance);
+		instance = va_arg(args, bitmatrix **);
+		__bm_del(instance);
 	}
 	va_end(args);
 }
 
-void bfsetbit(bitfield *instance, const unsigned int row_nr, const unsigned int column_nr) {
+void bm_setbit(bitmatrix *instance, const unsigned int row_nr, const unsigned int column_nr) {
 	BITSET(instance, row_nr, column_nr);
 }
 
-unsigned int bfgetbit(const bitfield *instance, const unsigned int row_nr,
+unsigned int bm_getbit(const bitmatrix *instance, const unsigned int row_nr,
 		      const unsigned int column_nr) {
 	return BITGET(instance, row_nr, column_nr);
 }
 
-void bfclearbit(bitfield *instance, const unsigned int row_nr, const unsigned int column_nr) {
+void bm_clearbit(bitmatrix *instance, const unsigned int row_nr, const unsigned int column_nr) {
 	BITCLEAR(instance, row_nr, column_nr);
 }
 
-void bftogglebit(bitfield *instance, const unsigned int row_nr,
+void bm_togglebit(bitmatrix *instance, const unsigned int row_nr,
 		 const unsigned int column_nr) {
 	BITTOGGLE(instance, row_nr, column_nr);
 }
 
-bitfield *bfand(const bitfield *input1, const bitfield *input2) {
+bitmatrix *bm_and(const bitmatrix *input1, const bitmatrix *input2) {
 	if (input1->rows != input2->rows || input1->columns != input2->columns)
 		return NULL;
 	int i;
-	bitfield *output = bfnew(input1->rows, input1->columns);
+	bitmatrix *output = bm_new(input1->rows, input1->columns);
 	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
 		output->field[i] = BITSLOT_AND(input1, input2, i);
 	}
 	return output;
 }
 
-bitfield *bfor(const bitfield *input1, const bitfield *input2) {
+bitmatrix *bm_or(const bitmatrix *input1, const bitmatrix *input2) {
 	if (input1->rows != input2->rows || input1->columns != input2->columns)
 		return NULL;
 	int i;
-	bitfield *output = bfnew(input1->rows, input1->columns);
+	bitmatrix *output = bm_new(input1->rows, input1->columns);
 	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
 		output->field[i] = BITSLOT_OR(input1, input2, i);
 	}
 	return output;
 }
 
-bitfield *bfxor(const bitfield *input1, const bitfield *input2) {
+bitmatrix *bm_xor(const bitmatrix *input1, const bitmatrix *input2) {
 	if (input1->rows != input2->rows || input1->columns != input2->columns)
 		return NULL;
 	int i;
-	bitfield *output = bfnew(input1->rows, input1->columns);
+	bitmatrix *output = bm_new(input1->rows, input1->columns);
 	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
 		output->field[i] = BITSLOT_XOR(input1, input2, i);
 	}
 	return output;
 }
 
-bitfield *bfnot(const bitfield *input) {
-	bitfield *output = bfnew(input->rows, input->columns);
+bitmatrix *bm_not(const bitmatrix *input) {
+	bitmatrix *output = bm_new(input->rows, input->columns);
 	int i;
 	for (i = 0; i < BITNSLOTS(input->rows, input->columns); i++) {
 		output->field[i] = ~input->field[i];
 	}
-	bfcleartail(output);
+	bm_cleartail(output);
 	return output;
 }
 
-void bfsetall(bitfield *instance) {
+void bm_setall(bitmatrix *instance) {
 	if (!instance) return;
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
 		instance->field[i] = ~0UL;
-	bfcleartail(instance);
+	bm_cleartail(instance);
 }
 
-void bfclearall(bitfield *instance) {
+void bm_clearall(bitmatrix *instance) {
 	if (!instance) return;
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
 		instance->field[i] = 0UL;
 }
 
-bitfield *bfclone(const bitfield *input) {
+bitmatrix *bm_clone(const bitmatrix *input) {
 	if (!input) return NULL;
 	unsigned int bitnslots = BITNSLOTS(input->rows, input->columns);
-	bitfield *output = (bitfield *) malloc(sizeof(bitfield));
+	bitmatrix *output = (bitmatrix *) malloc(sizeof(bitmatrix));
 	if (!output)
 		return NULL;
 	output->rows = input->rows;
 	output->columns = input->columns;
 	output->field = malloc(bitnslots * sizeof(unsigned long));
 	if (!output->field) {
-		bfdel(output);
+		bm_del(output);
 		return NULL;
 	}
 	memcpy(output->field, input->field, bitnslots * sizeof(unsigned long));
 	return output;
 }
 
-void bfresize(bitfield *instance, const unsigned int new_rows,
+void bm_resize(bitmatrix *instance, const unsigned int new_rows,
 	      const unsigned int new_columns) {
 	unsigned long *tmp =
 	    calloc(1, BITNSLOTS(new_rows, new_columns) * sizeof(unsigned long));
@@ -176,12 +176,12 @@ void bfresize(bitfield *instance, const unsigned int new_rows,
 	instance->columns = new_columns;
 }
 
-bitfield *bfsub(const bitfield *input, const unsigned int start_row,
+bitmatrix *bm_sub(const bitmatrix *input, const unsigned int start_row,
 		const unsigned int start_column, const unsigned int nr_rows,
 		const unsigned int nr_columns) {
 	if (input->rows < start_row + nr_rows || input->columns < start_column + nr_columns)
 		return NULL;
-	bitfield *output = bfnew(nr_rows, nr_columns);
+	bitmatrix *output = bm_new(nr_rows, nr_columns);
 	int i_src, i_dst;
 	unsigned int src_cur_bit, src_cur_slot, src_end_bit, src_end_slot,
 	    src_slots, dst_cur_bit, dst_cur_slot, dst_end_bit, dst_end_slot,
@@ -220,7 +220,7 @@ bitfield *bfsub(const bitfield *input, const unsigned int start_row,
 	return output;
 }
 
-unsigned int bfpopcount(const bitfield *instance) {
+unsigned int bm_popcount(const bitmatrix *instance) {
 	unsigned int bits = 0;
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(instance->rows, instance->columns); i++)
@@ -229,10 +229,10 @@ unsigned int bfpopcount(const bitfield *instance) {
 	return bits;
 }
 
-unsigned int bfpopcount_r(const bitfield *instance, const unsigned int row_nr) {
+unsigned int bm_popcount_r(const bitmatrix *instance, const unsigned int row_nr) {
 	if (!instance) return 0;
 	if (row_nr >= instance->rows) return 0;
-	bitfield *row = bfsub(instance, row_nr, 0, 1, instance->columns);
+	bitmatrix *row = bm_sub(instance, row_nr, 0, 1, instance->columns);
 	unsigned int bits = 0;
 	unsigned int i;
 	for (i = 0; i < BITNSLOTS(row->rows, row->columns); i++)
@@ -241,7 +241,7 @@ unsigned int bfpopcount_r(const bitfield *instance, const unsigned int row_nr) {
 	return bits;
 }
 
-unsigned int bfpopcount_c(const bitfield *instance, const unsigned int col_nr) {
+unsigned int bm_popcount_c(const bitmatrix *instance, const unsigned int col_nr) {
 	if (!instance) return 0;
 	if (col_nr >= instance->columns) return 0;
 	unsigned int bits = 0;
@@ -251,54 +251,54 @@ unsigned int bfpopcount_c(const bitfield *instance, const unsigned int col_nr) {
 	return bits;
 }
 
-bitfield *bfmul(const bitfield *input1, const bitfield *input2) {
+bitmatrix *bm_mul(const bitmatrix *input1, const bitmatrix *input2) {
 	if (!input1 || !input2) return NULL;
 	if (input1->columns != input2->rows) return NULL;
-	bitfield *output = bfnew(input1->rows, input2->columns);
+	bitmatrix *output = bm_new(input1->rows, input2->columns);
 	unsigned int *matrix = calloc(1, output->rows * output->columns * sizeof(unsigned int));
-	bitfield *row, *column;
+	bitmatrix *row, *column;
 	unsigned int x, y, z;
 	unsigned long count;
 	for (x = 0; x < output->rows; x++) {
 		for (y = 0; y < output->columns; y++) {
 			count = 0;
-			row = bfsub(input1, x, 0, 1, input1->columns);
-			column = bfsub(input2, 0, y, input2->rows, 1);
+			row = bm_sub(input1, x, 0, 1, input1->columns);
+			column = bm_sub(input2, 0, y, input2->rows, 1);
 			for (z = 0; z < BITNSLOTS(1, input1->columns); z++) {
 				count += __builtin_popcount(row->field[z] & column->field[z]);
 			}
 			if (count & 1UL) BITSET(output, x, y);
-			bfdel(&row, &column);
+			bm_del(&row, &column);
 		}
 	}
 	free(matrix);
 	return output;
 }
 
-bitfield *bftranspose(const bitfield *input) {
+bitmatrix *bm_transpose(const bitmatrix *input) {
 	if (!input) return NULL;
-	bitfield *output = bfnew(input->columns, input->rows);
+	bitmatrix *output = bm_new(input->columns, input->rows);
 	unsigned x, y;
 	for (x = 0; x < input->rows; x++) {
 		for (y = 0; y < input->columns; y++) {
-			if (bfgetbit(input, x, y)) bfsetbit(output, y, x);
+			if (bm_getbit(input, x, y)) bm_setbit(output, y, x);
 		}
 	}
 	return output;
 }
 
-void bfprint(bitfield *instance) {
+void bm_print(bitmatrix *instance) {
 	int i, j;
 	for (i = 0; i < instance->rows; i++) {
 		for (j = 0; j < instance->columns; j++) {
-			printf("%i", bfgetbit(instance, i, j));
+			printf("%i", bm_getbit(instance, i, j));
 		}
 		printf("\n");
 	}
 }
 
 /*
-void bfrand(bitfield *instance) {
+void bm_rand(bitmatrix *instance) {
 	int i, j;
 	for (i = 0; i < instance->rows; i++) {
 		for (j = 0; j < instance->columns; j++) {
