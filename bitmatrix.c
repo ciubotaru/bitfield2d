@@ -25,7 +25,7 @@ bitmatrix *bm_new(const unsigned int rows, const unsigned int columns) {
 	return output;
 }
 
-void __bm_del(bitmatrix **instance) {
+void bm_del__(bitmatrix **instance) {
 	if (*instance == NULL)
 		return;
 	free((*instance)->field);
@@ -33,14 +33,14 @@ void __bm_del(bitmatrix **instance) {
 	*instance = NULL;
 }
 
-void _bm_del(unsigned int count, ...) {
+void bm_del_(unsigned int count, ...) {
 	unsigned int i;
 	bitmatrix **instance = NULL;
 	va_list args;
 	va_start(args, count);
 	for (i = 0; i < count; i++) {
 		instance = va_arg(args, bitmatrix **);
-		__bm_del(instance);
+		bm_del__(instance);
 	}
 	va_end(args);
 }
@@ -63,36 +63,75 @@ void bm_togglebit(bitmatrix *instance, const unsigned int row_nr,
 	BITTOGGLE(instance, row_nr, column_nr);
 }
 
-bitmatrix *bm_and(const bitmatrix *input1, const bitmatrix *input2) {
-	if (input1->rows != input2->rows || input1->columns != input2->columns)
-		return NULL;
-	int i;
-	bitmatrix *output = bm_new(input1->rows, input1->columns);
-	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
-		output->field[i] = BITSLOT_AND(input1, input2, i);
+static inline void bm_and__(bitmatrix *input1, const bitmatrix *input2) {
+	if (input1->rows != input2->rows || input1->columns != input2->columns) {
+		bm_del(&input1);
+		return;
 	}
+	int i;
+	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
+		input1->field[i] &= input2->field[i];
+	}
+}
+
+bitmatrix *bm_and_(unsigned int count, ...)
+{
+	unsigned int i;
+	va_list args;
+	va_start(args, count);
+	bitmatrix *output = bm_clone(va_arg(args, bitmatrix *));
+	for (i = 1; i < count; i++) {
+		bm_and__(output, va_arg(args, bitmatrix *));
+	}
+	va_end(args);
 	return output;
 }
 
-bitmatrix *bm_or(const bitmatrix *input1, const bitmatrix *input2) {
-	if (input1->rows != input2->rows || input1->columns != input2->columns)
-		return NULL;
-	int i;
-	bitmatrix *output = bm_new(input1->rows, input1->columns);
-	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
-		output->field[i] = BITSLOT_OR(input1, input2, i);
+static inline void bm_or__(bitmatrix *input1, const bitmatrix *input2) {
+	if (input1->rows != input2->rows || input1->columns != input2->columns) {
+		bm_del(&input1);
+		return;
 	}
+	int i;
+	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
+		input1->field[i] |= input2->field[i];
+	}
+}
+
+bitmatrix *bm_or_(unsigned int count, ...)
+{
+	unsigned int i;
+	va_list args;
+	va_start(args, count);
+	bitmatrix *output = bm_clone(va_arg(args, bitmatrix *));
+	for (i = 1; i < count; i++) {
+		bm_or__(output, va_arg(args, bitmatrix *));
+	}
+	va_end(args);
 	return output;
 }
 
-bitmatrix *bm_xor(const bitmatrix *input1, const bitmatrix *input2) {
-	if (input1->rows != input2->rows || input1->columns != input2->columns)
-		return NULL;
-	int i;
-	bitmatrix *output = bm_new(input1->rows, input1->columns);
-	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
-		output->field[i] = BITSLOT_XOR(input1, input2, i);
+static inline void bm_xor__(bitmatrix *input1, const bitmatrix *input2) {
+	if (input1->rows != input2->rows || input1->columns != input2->columns) {
+		bm_del(&input1);
+		return;
 	}
+	int i;
+	for (i = 0; i < BITNSLOTS(input1->rows, input1->columns); i++) {
+		input1->field[i] ^= input2->field[i];
+	}
+}
+
+bitmatrix *bm_xor_(unsigned int count, ...)
+{
+	unsigned int i;
+	va_list args;
+	va_start(args, count);
+	bitmatrix *output = bm_clone(va_arg(args, bitmatrix *));
+	for (i = 1; i < count; i++) {
+		bm_xor__(output, va_arg(args, bitmatrix *));
+	}
+	va_end(args);
 	return output;
 }
 

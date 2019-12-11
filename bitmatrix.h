@@ -43,9 +43,9 @@ typedef struct bitmatrix bitmatrix;
 
 bitmatrix *bm_new(const unsigned int rows, const unsigned int columns);
 
-void _bm_del(unsigned int count, ...);
+void bm_del_(unsigned int count, ...);
 
-#define bm_del(...) _bm_del(BITMATRIX_NARG(__VA_ARGS__), __VA_ARGS__)
+#define bm_del(...) bm_del_(BITMATRIX_NARG(__VA_ARGS__), __VA_ARGS__)
 
 unsigned int bm_getbit(const bitmatrix *instance, const unsigned int x,
 		       const unsigned int y);
@@ -59,11 +59,17 @@ void bm_clearbit(bitmatrix *instance, const unsigned int x,
 void bm_togglebit(bitmatrix *instance, const unsigned int x,
 		    const unsigned int y);
 
-bitmatrix *bm_and(const bitmatrix *input1, const bitmatrix *input2);
+bitmatrix *bm_and_(unsigned int count, ...);
 
-bitmatrix *bm_or(const bitmatrix *input1, const bitmatrix *input2);
+#define bm_and(...) (bitmatrix *) bm_and_(BITMATRIX_NARG(__VA_ARGS__), __VA_ARGS__)
 
-bitmatrix *bm_xor(const bitmatrix *input1, const bitmatrix *input2);
+bitmatrix *bm_or_(unsigned int count, ...);
+
+#define bm_or(...) (bitmatrix *) bm_or_(BITMATRIX_NARG(__VA_ARGS__), __VA_ARGS__)
+
+bitmatrix *bm_xor_(unsigned int count, ...);
+
+#define bm_xor(...) (bitmatrix *) bm_xor_(BITMATRIX_NARG(__VA_ARGS__), __VA_ARGS__)
 
 bitmatrix *bm_not(const bitmatrix *input);
 
